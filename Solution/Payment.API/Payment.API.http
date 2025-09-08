@@ -1,0 +1,70 @@
+@Payment.API_HostAddress = http://localhost:5004
+@Payment.API_Production = http://localhost:5000
+
+### Production (Docker) - Cash Out
+POST {{Payment.API_Production}}/api/payment/cashout
+Content-Type: application/json
+
+{
+  "transactionId": "{{$guid}}",
+  "sourceAccount": {
+    "bankCode": "001",
+    "agency": "1234",
+    "agencyDigit": "5",
+    "accountNumber": "567890",
+    "accountDigit": "1",
+    "accountType": "CC",
+    "documentNumber": "12345678901",
+    "accountHolderName": "João da Silva"
+  },
+  "destinationAccount": {
+    "bankCode": "237",
+    "agency": "5678",
+    "agencyDigit": "9",
+    "accountNumber": "123456",
+    "accountDigit": "7",
+    "accountType": "CC",
+    "documentNumber": "98765432100",
+    "accountHolderName": "Maria dos Santos"
+  },
+  "amount": 1500.50,
+  "paymentDate": "2024-12-31T10:30:00Z"
+}
+
+### Production (Docker) - Health Check
+GET {{Payment.API_Production}}/health
+
+### Production (Docker) - Get Cash Out
+GET {{Payment.API_Production}}/api/payment/cashout/550e8400-e29b-41d4-a716-446655440000
+
+### Development (Local) - Cash Out  
+POST {{Payment.API_HostAddress}}/api/payment/cashout
+Content-Type: application/json
+
+{
+  "transactionId": "{{$guid}}",
+  "sourceAccount": {
+    "bankCode": "001",
+    "agency": "1234",
+    "agencyDigit": "5",
+    "accountNumber": "567890",
+    "accountDigit": "1",
+    "accountType": "CC",
+    "documentNumber": "12345678901",
+    "accountHolderName": "João da Silva"
+  },
+  "destinationAccount": {
+    "bankCode": "237",
+    "agency": "5678",
+    "agencyDigit": "9",
+    "accountNumber": "123456",
+    "accountDigit": "7",
+    "accountType": "CC",
+    "documentNumber": "98765432100",
+    "accountHolderName": "Maria dos Santos"
+  },
+  "amount": 1500.50,
+  "paymentDate": "2024-12-31T10:30:00Z"
+}
+
+###

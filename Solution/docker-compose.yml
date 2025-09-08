@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: payment-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - payment-network
+
+  payment-api:
+    build:
+      context: ./Payment.API
+      dockerfile: Dockerfile
+    container_name: payment-api
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - Redis__ConnectionString=redis:6379,defaultDatabase=0,connectTimeout=5000,syncTimeout=250,asyncTimeout=250,connectRetry=3,abortConnect=false,keepAlive=180
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - payment-network
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: payment-redis-ui
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=redis:redis:6379
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - payment-network
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  payment-network:
+    driver: bridge
