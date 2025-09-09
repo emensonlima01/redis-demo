@@ -9,10 +9,8 @@ public class RequestResponseLoggingMiddleware(RequestDelegate next, ILogger<Requ
 
         using (logger.BeginScope(new Dictionary<string, object> { ["RequestId"] = requestId }))
         {
-            // Log request
             await LogRequestAsync(context, requestId);
 
-            // Capture original response stream
             var originalResponseStream = context.Response.Body;
             using var responseStream = new MemoryStream();
             context.Response.Body = responseStream;
@@ -22,10 +20,8 @@ public class RequestResponseLoggingMiddleware(RequestDelegate next, ILogger<Requ
                 await next(context);
                 stopwatch.Stop();
 
-                // Log successful response
                 await LogResponseAsync(context, requestId, stopwatch.ElapsedMilliseconds);
 
-                // Copy response back to original stream
                 responseStream.Seek(0, SeekOrigin.Begin);
                 await responseStream.CopyToAsync(originalResponseStream);
             }
@@ -34,7 +30,6 @@ public class RequestResponseLoggingMiddleware(RequestDelegate next, ILogger<Requ
                 stopwatch.Stop();
                 context.Response.Body = originalResponseStream;
 
-                // Log error
                 logger.LogError(ex,
                     "[{RequestId}] ERROR | {Method} {Path} | Duration: {Duration}ms | Exception: {ExceptionType}",
                     requestId, context.Request.Method, context.Request.Path, stopwatch.ElapsedMilliseconds, ex.GetType().Name);
