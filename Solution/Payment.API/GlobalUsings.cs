@@ -16,3 +16,6 @@ global using System.Text.Json;
 global using System.Text.Json.Serialization;
 global using FluentValidation;
 global using FluentValidation.AspNetCore;
+global using System.Diagnostics;
+global using System.Text;
+global using Payment.API.Middlewares;

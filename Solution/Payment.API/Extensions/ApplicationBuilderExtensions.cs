@@ -11,12 +11,13 @@ public static class ApplicationBuilderExtensions
         }
 
         app.UseHttpsRedirection();
-        
+
         return app;
     }
 
     public static WebApplication ConfigureMiddlewares(this WebApplication app)
     {
+        app.UseMiddleware<RequestResponseLoggingMiddleware>();
         return app;
     }
 
